@@ -1,0 +1,17 @@
+execute:
+  -
+    node: server
+    js: admin.nodeInfo.enode
+    result: serverEnode
+  -
+    node: les_cli
+    js: admin.addPeer("{{ .serverEnode }}")
+  -
+    node: prio_cli
+    js: admin.addPeer("{{ .serverEnode }}")
+  -
+    node: prio_cli
+    rpc:
+      method: admin_peers
+    result: peers
+
