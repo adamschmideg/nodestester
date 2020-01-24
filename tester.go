@@ -5,8 +5,8 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"os/exec"
 	"text/template"
-
 
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/api/types"
@@ -54,6 +54,21 @@ func dockerID(name string) string {
 	return id
 }
 
+func dockerExec(id string, _ []string) (string, error) {
+	//osCmd := exec.Command("docker", cmd...)
+	containerID := "1fbb79d1d767" 
+	datadir := "/root/.ethereum/goerli"
+	quotedJs := "'admin.nodeInfo'"
+	args := []string{"exec", "-it", containerID, "geth", "--datadir", datadir, "attach", "--exec", quotedJs}
+	//args := []string{"exec", "-t", containerID, "ls"}
+	osCmd := exec.Command("docker", args...)
+	out, err := osCmd.CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return string(out), nil
+}
+
 func main() {
 	testPath := flag.String("t", "test.yml", "Full path to the test yaml file")
 	flag.Parse()
@@ -61,7 +76,7 @@ func main() {
 	var cl commandList
 	yaml.Unmarshal(data, &cl)	
 	vars := make(map[string]string)
-	for _, cmd := range cl.Execute {
+	for _, cmd := range cl.Execute[0:1] {
 		switch {
 		case cmd.Js != "": {
 			tmpl, _ := template.New("test").Parse(cmd.Js)
@@ -70,7 +85,14 @@ func main() {
 			js := b.String()
 			fmt.Println("exec js", js)
 			containerID := dockerID(cmd.Node)
-			fmt.Println(containerID)
+			datadir := "/root/.ethereum/goerli"
+			quotedJs := "'" + js + "'"
+			args := []string{"exec", "-t", containerID, "geth", "--datadir", datadir, "attach", "--exec", quotedJs}
+			result, err := dockerExec(containerID, args)
+			if err != nil {
+				fmt.Println("dockerExec", err)
+			}
+			fmt.Println("result", result)
 		}
 		default:
 			fmt.Println("Not implemented", cmd.Rpc)

@@ -3,6 +3,7 @@ module tester.go
 go 1.13
 
 require (
+	github.com/ahmetalpbalkan/dexec v0.0.0-20160630173852-2538e5e2198f // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/docker v1.13.1
 	github.com/docker/go-connections v0.4.0 // indirect

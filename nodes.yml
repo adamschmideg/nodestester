@@ -1,19 +1,34 @@
-version: '3.1'
+version: '3.4'
 services:
-  server:
+  light_server:
     image: ethereum/client-go:latest
-    container_name: light_srv
     entrypoint:
       - geth
-      - --lightserv=100
+      - --maxpeers=1
+      - --light.maxpeers=1
       - --nousb
       - --syncmode=fast
       - --rpc
       - --rpcapi=les,admin
       - --rpcaddr=0.0.0.0
       - --goerli
-    expose:
-      - 8545
+    ports:
+      - 8545:8545
+    networks:
+      - shared_network
+  les_cli:
+    image: ethereum/client-go:latest
+    entrypoint:
+      - geth
+      - --nousb
+      - --syncmode=fast
+      - --rpc
+      - --rpcapi=les,admin
+      - --rpcaddr=0.0.0.0
+      - --rpcport=8546
+      - --goerli
+    ports:
+      - 8546:8546
     networks:
       - shared_network
 
