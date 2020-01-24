@@ -2,7 +2,7 @@ version: '3.1'
 services:
   server:
     image: ethereum/client-go:latest
-    container_name: lightserver
+    container_name: light_srv
     entrypoint:
       - geth
       - --lightserv=100

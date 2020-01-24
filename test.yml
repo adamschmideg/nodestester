@@ -1,6 +1,6 @@
 execute:
   -
-    node: server
+    node: light_srv
     js: admin.nodeInfo.enode
     result: serverEnode
   -
